@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cosmic House Personality Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ===== BACKGROUND ===== */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: black url("https://www.transparenttextures.com/patterns/stardust.png");
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== HEADINGS ======= */
+h1, h2{
+  font-family: 'Orbitron', sans-serif;
+}
+/* ===== QUIZ CONTAINER ===== */
+#quiz-box {
+  width: 90%;
+  max-width: 600px;
+  background: rgba(0,0,0,0.75);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
+}
+
+/* ===== PROGRESS BAR ===== */
+#progress-container {
+  width: 100%;
+  height: 10px;
+  background: #333;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: gold;
+  border-radius: 10px;
+}
+
+/* ===== BUTTONS ===== */
+button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  background: gold;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+}
+button:hover {
+  background: orange;
+}
+
+/* =========== MUSIC BUTTON ============ */
+button.music-btn {
+  width: auto;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 14px;
+  margin: 10px auto;
+  display: block;
+}
+
+
+/* ===== BADGE ===== */
+#badge {
+  margin-top: 20px;
+  font-size: 80px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="quiz-box">
+
+  <h1>🌌 Chronicles of the Cosmos 🌌</h1>
+  <h3>The Galactic Personality Test</h3>
+
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <h2 id="question"></h2>
+  <div id="options"></div>
+  <div id="top-controls">
+    <button class="music-btn" onclick="toggleMusic()">▶️ Play Music</button>
+  </div>
+  <div id="result"></div>
+  <div id="badge"></div>
+  <div id="result-controls"></div>
+
+</div>
+
+<script>
+/* ===== MUSIC ===== */
+let musicStarted = false;
+
+function startMusic() {
+  if (!musicStarted) {
+    const music = document.getElementById("bg-music");
+    const btn = document.querySelector(".music-btn");
+
+    music.volume = 0.4;
+    music.play().catch(err => console.log("Audio blocked:", err));
+    btn.innerText = "🔇 Mute Music";
+    musicStarted = true;
+  }
+}
+
+
+function toggleMusic() {
+  const music = document.getElementById("bg-music");
+  const btn = document.querySelector(".music-btn");
+
+  if (music.paused) {
+    music.play();
+    btn.innerText = "🔇 Mute Music";
+  } else {
+    music.pause();
+    btn.innerText = "▶️ Play Music";
+  }
+}
+
+
+/* ===== QUESTIONS ===== */
+const questions = [
+  {
+    q: "You’re chosen to lead a mission to colonize a new planet. What’s your first instinct?",
+    planets: ["Sun","Mercury","Venus","Earth"],
+    text: ["Command with confidence","Communicate clearly","Ensure harmony","Check logistics"]
+  },
+  {
+    q: "A meteor shower approaches your ship. How do you react?",
+    planets: ["Mars","Jupiter","Saturn","Uranus"],
+    text: ["Steer through boldly","Stay optimistic","Calculate the safest path","Try an unconventional move"]
+  },
+  {
+    q: "You discover an alien civilization. What excites you most?",
+    planets: ["Neptune","Pluto","Jupiter","Saturn"],
+    text: ["Their imaginative art","Their deep wisdom","Their curiosity","Their discipline"]
+  },
+  {
+    q: "On a space station, what role do you take?",
+    planets: ["Sun","Mercury","Venus","Earth"],
+    text: ["Leader","Communicator","Mediator","Engineer"]
+  },
+  {
+    q: "You’re navigating a wormhole. What’s your approach?",
+    planets: ["Mars","Saturn","Uranus","Neptune"],
+    text: ["Dive in","Measure risks","Innovate","Reflect"]
+  },
+  {
+    q: "Exploring a nebula, what draws you in?",
+    planets: ["Venus","Pluto","Neptune","Jupiter"],
+    text: ["Beauty","Mystery","Imagination","Discovery"]
+  },
+  {
+    q: "Your crew is losing morale. How do you help?",
+    planets: ["Sun","Mercury","Venus","Earth"],
+    text: ["Confidence","Humor","Empathy","Reliability"]
+  },
+  {
+    q: "You’re remembered in galactic history for…",
+    planets: ["Mars","Jupiter","Saturn","Pluto"],
+    text: ["Courage","Curiosity","Discipline","Wisdom"]
+  },
+  {
+    q: "Designing a starship, you focus on…",
+    planets: ["Mars","Uranus","Earth","Venus"],
+    text: ["Speed","Innovation","Durability","Aesthetics"]
+  },
+  {
+    q: "At the end of your journey, you want to be known for…",
+    planets: ["Sun","Mercury","Venus","Pluto"],
+    text: ["Leadership","Communication","Harmony","Introspection"]
+  }
+];
+
+const badges = {
+  Sun: "☀️",
+  Mercury: "🛰️",
+  Venus: "💖",
+  Earth: "🌍",
+  Mars: "🔥",
+  Jupiter: "🌠",
+  Saturn: "🪐",
+  Uranus: "⚡",
+  Neptune: "🌊",
+  Pluto: "🖤"
+};
+
+let current = 0;
+let answers = [];
+
+function loadQuestion() {
+  const q = questions[current];
+  document.getElementById("question").innerText = q.q;
+
+  document.getElementById("progress-bar").style.width =
+    ((current / questions.length) * 100) + "%";
+
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+
+  q.text.forEach((t, i) => {
+    const btn = document.createElement("button");
+    btn.innerText = t;
+    btn.onclick = () => select(q.planets[i]);
+    options.appendChild(btn);
+  });
+}
+
+function select(planet) {
+  startMusic();   // 🎵 start music on first interaction
+
+  answers.push(planet);
+  current++;
+
+  if (current < questions.length) {
+    loadQuestion();
+  } else {
+    sendToBackend();
+  }
+}
+
+
+function sendToBackend() {
+  document.getElementById("progress-bar").style.width = "100%";
+
+  fetch("/calculate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ answers })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("question").innerText =
+      `You belong to the ${data.house} House`;
+
+    document.getElementById("options").innerHTML = "";
+    document.getElementById("result").innerText = data.description;
+    document.getElementById("badge").innerText = badges[data.house];
+
+    //Move music button under results
+    const musicBtn = document.querySelector(".music-btn");
+    document.getElementById("result-controls").appendChild(musicBtn);
+  });
+}
+
+
+loadQuestion();
+</script>
+<audio id="bg-music" loop>
+  <source src="/static/space-music.mp3" type="audio/mpeg">
+</audio>
+</body>
+</html>
